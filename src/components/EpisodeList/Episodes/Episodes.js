@@ -21,7 +21,7 @@ const Episodes = (props) => {
       seasonHeader = (
         <div className={classes.SeasonHeader}>
           <h2 key={'season ' + season}>Season {season}</h2>
-          <div class="text-muted">{seasonSubHeader.join(' | ')}</div>
+          <div className="text-muted">{seasonSubHeader.join(' | ')}</div>
           <hr />
         </div>
       );

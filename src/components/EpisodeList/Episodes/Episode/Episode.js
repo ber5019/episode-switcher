@@ -27,7 +27,7 @@ const Episode = (props) => {
       <div className={classes.ImageContainer}>{image}</div>
       <div>
         <h3>{props.title}</h3>
-        <div class="text-muted">{episodeSubHeader.join(' | ')}</div>
+        <div className="text-muted">{episodeSubHeader.join(' | ')}</div>
         <div>{props.description !== null && props.description.replace(/(<([^>]+)>)/gi, '').substr(0, 270)}</div>
       </div>
     </div>

@@ -113,6 +113,11 @@ let EpisodeSwitcher = (props) => {
 
   let handleSeasonChange = async () => {
     setCurrentSeason(seasonNumberDropdownRef.current.value);
+    // make sure to reset the currentEpisode state
+    let defaultEpisodeNumberIndex = showDetails.episodes.findIndex((episode) => {
+      return episode.season === Number(seasonNumberDropdownRef.current.value);
+    });
+    setCurrentEpisode(showDetails.episodes[defaultEpisodeNumberIndex].number);
   };
 
   let handleEpisodeChange = async () => {
@@ -122,7 +127,7 @@ let EpisodeSwitcher = (props) => {
   let onReplaceHandler = async (event) => {
     event.preventDefault();
     try {
-      //query for show ID
+      //query for show id
       const showDataURL = `https://api.tvmaze.com/singlesearch/shows?q=${episodeReplaceInputRef.current.value}&embed=episodes`;
       const showResponse = await fetch(showDataURL);
       if (!showResponse.ok) {

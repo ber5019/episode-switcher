@@ -35,7 +35,7 @@ const ShowHeader = (props) => {
       <div className={classes.ImageContainer}>{thumbnail}</div>
       <div>
         <h1>{props.title}</h1>
-        <div class="text-muted">{subHeader.join(' | ')}</div>
+        <div className="text-muted">{subHeader.join(' | ')}</div>
         <div className={classes.Description}>
           {props.summary !== null && props.summary.replace(/(<([^>]+)>)/gi, '').substr(0, 700)}
         </div>
