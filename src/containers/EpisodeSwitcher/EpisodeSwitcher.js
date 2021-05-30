@@ -4,6 +4,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
+import Alert from 'react-bootstrap/Alert';
 
 import ShowHeader from '../../components/ShowHeader/ShowHeader';
 import ModifierUI from '../../components/EpisodeList/ModifierUI/ModifierUI';
@@ -23,6 +24,7 @@ let EpisodeSwitcher = (props) => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentSeason, setCurrentSeason] = useState(1);
   const [currentEpisode, setCurrentEpisode] = useState(1);
+  const [replaceError, setReplaceError] = useState('');
   const showSearchInputRef = useRef();
   const episodeReplaceInputRef = useRef();
   const seasonNumberDropdownRef = useRef();
@@ -54,8 +56,11 @@ let EpisodeSwitcher = (props) => {
           image: newData.image ? newData.image.medium : null,
         };
         setShowDetails(newShowDetails);
-        setCurrentSeason(newData._embedded.episodes[0].season);
-        setCurrentEpisode(newData._embedded.episodes[0].number);
+        setReplaceError('');
+        if (newShowDetails.episodes.length > 0) {
+          setCurrentSeason(newShowDetails.episodes[0].season);
+          setCurrentEpisode(newShowDetails.episodes[0].number);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -81,8 +86,11 @@ let EpisodeSwitcher = (props) => {
         image: newData.image ? newData.image.medium : null,
       };
       setShowDetails(newShowDetails);
-      setCurrentSeason(newShowDetails._embedded.episodes[0].season);
-      setCurrentEpisode(newShowDetails._embedded.episodes[0].number);
+      setReplaceError('');
+      if (newShowDetails.episodes.length > 0) {
+        setCurrentSeason(newShowDetails.episodes[0].season);
+        setCurrentEpisode(newShowDetails.episodes[0].number);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -118,7 +126,7 @@ let EpisodeSwitcher = (props) => {
       const showDataURL = `http://api.tvmaze.com/singlesearch/shows?q=${episodeReplaceInputRef.current.value}&embed=episodes`;
       const showResponse = await fetch(showDataURL);
       if (!showResponse.ok) {
-        throw new Error('Retrieving episode failed');
+        throw new Error(`There is no show matching "${episodeReplaceInputRef.current.value}"`);
       }
       const showData = await showResponse.json();
       // query for episode id
@@ -128,20 +136,30 @@ let EpisodeSwitcher = (props) => {
       const episodeDataURL = `http://api.tvmaze.com/shows/${showID}/episodebynumber?season=${season}&number=${episode}`;
       const episodeResponse = await fetch(episodeDataURL);
       if (!episodeResponse.ok) {
-        throw new Error('Retrieving show failed');
+        throw new Error('There is no matching episode for the season, episode and show provided.');
       }
       const episodeData = await episodeResponse.json();
 
       let newShowData = { ...showDetails };
       let replacementIndex = newShowData.episodes.findIndex(
-        (x) => x.season === episodeData.season && x.number === episodeData.number
+        (episode) => episode.season === episodeData.season && episode.number === episodeData.number
       );
       newShowData.episodes[replacementIndex] = episodeData;
       setShowDetails(newShowData);
+      setReplaceError('');
     } catch (error) {
-      console.log(error);
+      setReplaceError(error.message);
     }
   };
+
+  let handleReplaceEpisodeFormSubmit = (event) => {
+    event.preventDefault();
+    if (episodeReplaceInputRef.current.value !== '') {
+      onReplaceHandler(event);
+    }
+  };
+
+  let errorMessage = replaceError === '' ? null : <Alert variant={'danger'}>{replaceError}</Alert>;
 
   let displayInfo = (
     <Container>
@@ -155,18 +173,39 @@ let EpisodeSwitcher = (props) => {
         />
         {
           <ModifierUI
+            replaceSubmit={handleReplaceEpisodeFormSubmit}
             seasonChange={handleSeasonChange}
             currentSeason={currentSeason}
             seasonRef={seasonNumberDropdownRef}
             episodeChange={handleEpisodeChange}
             currentEpisode={currentEpisode}
             episodeRef={episodeNumberDropdownRef}
-            seasons={showDetails.episodes.map(({ season, number }) => [season, number])}
+            seasonsObj={showDetails.episodes
+              .map(({ season, number }) => [season, number])
+              .reduce((result, currentArray) => {
+                const key = currentArray[0];
+                const value = currentArray[1];
+                result[key] = (result[key] || []).concat(value);
+                return result;
+              }, {})}
             inputReference={episodeReplaceInputRef}
             clickReplace={onReplaceHandler}
           />
         }
-        {<EpisodeList episodeData={showDetails.episodes} />}
+        {errorMessage}
+        {
+          <EpisodeList
+            episodeData={showDetails.episodes}
+            seasonsObj={showDetails.episodes
+              .map(({ season, number }) => [season, number])
+              .reduce((result, currentArray) => {
+                const key = currentArray[0];
+                const value = currentArray[1];
+                result[key] = (result[key] || []).concat(value);
+                return result;
+              }, {})}
+          />
+        }
       </div>
     </Container>
   );
@@ -177,7 +216,7 @@ let EpisodeSwitcher = (props) => {
         <Container>
           <Navbar.Brand href="#home">Episode Switcher</Navbar.Brand>
           <Form inline onSubmit={handleSearchShowFormSubmit}>
-            <Form.Control type="text" placeholder="Search" ref={showSearchInputRef} className="mr-sm-2" />
+            <Form.Control type="text" placeholder="Enter a TV show" ref={showSearchInputRef} className="mr-sm-2" />
             <Button onClick={handleOnShowSearch} variant="secondary">
               Search
             </Button>
