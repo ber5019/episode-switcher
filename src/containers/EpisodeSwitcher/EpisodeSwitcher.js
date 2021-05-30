@@ -38,7 +38,7 @@ let EpisodeSwitcher = (props) => {
 
   useEffect(() => {
     const fetchRandomShow = async () => {
-      const queryURL = `http://api.tvmaze.com/shows/${GenerateRandomEpisodeId()}?embed=episodes`;
+      const queryURL = `https://api.tvmaze.com/shows/${GenerateRandomEpisodeId()}?embed=episodes`;
       try {
         const response = await fetch(queryURL);
         if (!response.ok) {
@@ -98,7 +98,7 @@ let EpisodeSwitcher = (props) => {
 
   let handleOnShowSearch = async () => {
     if (showSearchInputRef.current.value !== '') {
-      const queryURL = `http://api.tvmaze.com/singlesearch/shows?q=${showSearchInputRef.current.value}&embed=episodes`;
+      const queryURL = `https://api.tvmaze.com/singlesearch/shows?q=${showSearchInputRef.current.value}&embed=episodes`;
       fetchShowDetails(queryURL);
     }
   };
@@ -106,7 +106,7 @@ let EpisodeSwitcher = (props) => {
   const handleSearchShowFormSubmit = (event) => {
     event.preventDefault();
     if (showSearchInputRef.current.value !== '') {
-      const queryURL = `http://api.tvmaze.com/singlesearch/shows?q=${showSearchInputRef.current.value}&embed=episodes`;
+      const queryURL = `https://api.tvmaze.com/singlesearch/shows?q=${showSearchInputRef.current.value}&embed=episodes`;
       fetchShowDetails(queryURL);
     }
   };
@@ -123,7 +123,7 @@ let EpisodeSwitcher = (props) => {
     event.preventDefault();
     try {
       //query for show ID
-      const showDataURL = `http://api.tvmaze.com/singlesearch/shows?q=${episodeReplaceInputRef.current.value}&embed=episodes`;
+      const showDataURL = `https://api.tvmaze.com/singlesearch/shows?q=${episodeReplaceInputRef.current.value}&embed=episodes`;
       const showResponse = await fetch(showDataURL);
       if (!showResponse.ok) {
         throw new Error(`There is no show matching "${episodeReplaceInputRef.current.value}"`);
@@ -133,7 +133,7 @@ let EpisodeSwitcher = (props) => {
       const showID = showData.id;
       const season = currentSeason;
       const episode = currentEpisode;
-      const episodeDataURL = `http://api.tvmaze.com/shows/${showID}/episodebynumber?season=${season}&number=${episode}`;
+      const episodeDataURL = `https://api.tvmaze.com/shows/${showID}/episodebynumber?season=${season}&number=${episode}`;
       const episodeResponse = await fetch(episodeDataURL);
       if (!episodeResponse.ok) {
         throw new Error('There is no matching episode for the season, episode and show provided.');
