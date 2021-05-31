@@ -7,7 +7,7 @@ import Container from 'react-bootstrap/Container';
 import Alert from 'react-bootstrap/Alert';
 
 import ShowHeader from '../../components/ShowHeader/ShowHeader';
-import ModifierUI from '../../components/EpisodeList/ModifierUI/ModifierUI';
+import ReplacerForm from '../../components/EpisodeList/ReplacerForm/ReplacerForm';
 import EpisodeList from '../../components/EpisodeList/EpisodeList';
 
 let EpisodeSwitcher = (props) => {
@@ -185,7 +185,7 @@ let EpisodeSwitcher = (props) => {
           thumbnail={showDetails.image}
         />
         {
-          <ModifierUI
+          <ReplacerForm
             replaceSubmit={handleReplaceEpisodeFormSubmit}
             seasonChange={handleSeasonChange}
             currentSeason={currentSeason}
