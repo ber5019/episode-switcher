@@ -3,18 +3,17 @@ import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 
 const ModifierUI = (props) => {
-  let seasonsObj = props.seasonsObj;
-  let seasonOptions = Object.keys(seasonsObj).map((season, seasonIndex) => {
+  let seasonOptions = Object.keys(props.seasonsObj).map((season, seasonIndex) => {
     return (
       <option key={seasonIndex} value={season}>
         Season {season}
       </option>
     );
   });
-  if (!(props.currentSeason in seasonsObj)) {
+  if (!(props.currentSeason in props.seasonsObj)) {
     return null;
   }
-  let episodeOptions = seasonsObj[props.currentSeason].map((episode, episodeIndex) => {
+  let episodeOptions = props.seasonsObj[props.currentSeason].map((episode, episodeIndex) => {
     return (
       <option key={episodeIndex} value={episode}>
         Episode {episode}

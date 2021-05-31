@@ -3,7 +3,6 @@ import classes from './Episodes.module.css';
 
 const Episodes = (props) => {
   let season = null;
-  let seasonObj = props.seasonsObj;
   let episodeComponents = props.data.map((element, mapIndex) => {
     let seasonHeader = null;
     if (element.season !== season) {
@@ -14,7 +13,7 @@ const Episodes = (props) => {
 
       season = element.season;
       let seasonSubHeader = [];
-      seasonSubHeader.push(seasonObj[season].length + ' episodes');
+      seasonSubHeader.push(props.seasonsObj[season].length + ' episodes');
       if (!isNaN(date.getDate())) {
         seasonSubHeader.push(`Aired ${shortDate}`);
       }

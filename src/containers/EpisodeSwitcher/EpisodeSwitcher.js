@@ -9,7 +9,6 @@ import Alert from 'react-bootstrap/Alert';
 import ShowHeader from '../../components/ShowHeader/ShowHeader';
 import ModifierUI from '../../components/EpisodeList/ModifierUI/ModifierUI';
 import EpisodeList from '../../components/EpisodeList/EpisodeList';
-import classes from './EpisodeSwitcher.module.css';
 
 let EpisodeSwitcher = (props) => {
   const [showDetails, setShowDetails] = useState({
@@ -164,11 +163,20 @@ let EpisodeSwitcher = (props) => {
     }
   };
 
-  let errorMessage = replaceError === '' ? null : <Alert variant={'danger'}>{replaceError}</Alert>;
+  let seasonObj = showDetails.episodes
+    .map(({ season, number }) => [season, number])
+    .reduce((result, currentArray) => {
+      const key = currentArray[0];
+      const value = currentArray[1];
+      result[key] = (result[key] || []).concat(value);
+      return result;
+    }, {});
+
+  let replaceErrorAlert = replaceError === '' ? null : <Alert variant={'danger'}>{replaceError}</Alert>;
 
   let displayInfo = (
     <Container>
-      <div className={classes.EpisodeSwitcher}>
+      <div>
         <ShowHeader
           title={showDetails.name}
           genres={showDetails.genres}
@@ -185,32 +193,13 @@ let EpisodeSwitcher = (props) => {
             episodeChange={handleEpisodeChange}
             currentEpisode={currentEpisode}
             episodeRef={episodeNumberDropdownRef}
-            seasonsObj={showDetails.episodes
-              .map(({ season, number }) => [season, number])
-              .reduce((result, currentArray) => {
-                const key = currentArray[0];
-                const value = currentArray[1];
-                result[key] = (result[key] || []).concat(value);
-                return result;
-              }, {})}
+            seasonsObj={seasonObj}
             inputReference={episodeReplaceInputRef}
             clickReplace={onReplaceHandler}
           />
         }
-        {errorMessage}
-        {
-          <EpisodeList
-            episodeData={showDetails.episodes}
-            seasonsObj={showDetails.episodes
-              .map(({ season, number }) => [season, number])
-              .reduce((result, currentArray) => {
-                const key = currentArray[0];
-                const value = currentArray[1];
-                result[key] = (result[key] || []).concat(value);
-                return result;
-              }, {})}
-          />
-        }
+        {replaceErrorAlert}
+        {<EpisodeList episodeData={showDetails.episodes} seasonsObj={seasonObj} />}
       </div>
     </Container>
   );
